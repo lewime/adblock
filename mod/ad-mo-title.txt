@@ -1,0 +1,8 @@
+[Adblock Plus 2.0]
+! Title: My AdFilters（for Mobile）
+! Expires: 12 hours
+! Version: 201412030951
+! Last Modified: 201412030952
+! Homepage: https://github.com/lewime/adblock
+! 本规则合并自Easylist、EasylistChina、EasyPrivacy、CJX'sAnnoyance
+!
