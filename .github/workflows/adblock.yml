@@ -1,0 +1,50 @@
+name: Build adblock rules files
+
+on:
+  schedule:
+    - cron: 0 */12 * * *
+  workflow_dispatch:
+
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Checkout the branch
+        uses: actions/checkout@v3
+
+      - name: Generate adblock files
+        run: |
+          mkdir -p ./download/
+          chmod +x ./adblock.py
+          python ./adblock.py
+
+      - name: Git push assets to github
+        run: |
+          rm -rf .git/ download/
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --global user.name github-actions[bot]
+          git init
+          git add --all
+          git commit -m "Update $(date -d "8 hour" -u "+%Y-%m-%d %H:%M:%S")"
+          git branch -M main
+          git remote add origin "https://${{ github.actor }}:${{ secrets.TOKEN }}@github.com/${{ github.repository }}"
+          git push -u -f origin main
+
+      - name: Purge jsdelivr cache
+        run: |
+          result=$(curl -s https://purge.jsdelivr.net/gh/lewime/adblock@master/)
+          if echo $result | grep -q 'success.*true'; then
+            echo "jsdelivr cache update success"
+          else
+            echo $result
+          fi
